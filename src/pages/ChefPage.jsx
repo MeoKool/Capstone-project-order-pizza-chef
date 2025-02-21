@@ -1,179 +1,197 @@
 "use client";
 
-import { useState } from "react";
-import { DndContext, DragOverlay, closestCorners } from "@dnd-kit/core";
-import OrderColumn from "../components/OrderColumn";
-import OrderCard from "../components/OrderCard";
-import { Bell } from "lucide-react";
+import { useEffect, useState, useRef } from "react";
+import { DndContext, closestCenter, DragOverlay } from "@dnd-kit/core";
+import { arrayMove } from "@dnd-kit/sortable";
+import { Bell, ChefHat, Loader2 } from "lucide-react";
+import OrderColumn from "../components/order-column";
+import OrderCard from "../components/order-card";
+import { GetOrderItems } from "../API/api";
 
 export default function ChefPage() {
+  const [orders, setOrders] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [activeId, setActiveId] = useState(null);
-  const [orders, setOrders] = useState({
-    unassigned: [
-      {
-        id: "1",
-        area: "Khu A",
-        table: "Bàn 1",
-        notes: ["ít cay", "thêm đường", "nhiều mỳ"],
-        status: "pending",
-        staff: null,
-      },
-      {
-        id: "2",
-        area: "Khu B",
-        table: "Bàn 2",
-        notes: ["ít cay", "thêm đường", "nhiều mỳ"],
-        status: "pending",
-        staff: null,
-      },
-    ],
-    inProgress: [],
-    completed: [],
-  });
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
 
-  const staff = [
-    { id: 1, name: "Sỹ Quảng", orderCount: 2 },
-    { id: 2, name: "Trường Thanh", orderCount: 3 },
-    { id: 3, name: "Nhật Hào", orderCount: 2 },
-    { id: 4, name: "Bảo", orderCount: 3 },
-    { id: 5, name: "Hưng Hảo", orderCount: 2 },
-  ];
+  useEffect(() => {
+    const fetchBookings = async () => {
+      setIsLoading(true);
+      try {
+        const response = await GetOrderItems();
+        setOrders(response.items);
+      } catch (err) {
+        console.error(err);
+      }
+      setIsLoading(false);
+    };
+    fetchBookings();
+  }, []);
 
-  const findContainer = (id) => {
-    if (id in orders) {
-      return id;
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
     }
-    return Object.keys(orders).find((key) =>
-      orders[key].some((item) => item.id === id)
-    );
-  };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const handleDragStart = (event) => {
-    const { active } = event;
-    setActiveId(active.id);
-  };
-
-  const handleDragOver = (event) => {
-    const { active, over } = event;
-    if (!over) return;
-
-    const activeContainer = findContainer(active.id);
-    const overContainer = findContainer(over.id);
-
-    if (activeContainer !== overContainer) {
-      setOrders((prev) => {
-        const activeItems = prev[activeContainer];
-        const overItems = prev[overContainer];
-        const activeIndex = activeItems.findIndex(
-          (item) => item.id === active.id
-        );
-        const overIndex = overItems.findIndex((item) => item.id === over.id);
-
-        return {
-          ...prev,
-          [activeContainer]: [
-            ...prev[activeContainer].filter((item) => item.id !== active.id),
-          ],
-          [overContainer]: [
-            ...prev[overContainer].slice(0, overIndex),
-            activeItems[activeIndex],
-            ...prev[overContainer].slice(overIndex),
-          ],
-        };
-      });
-    }
+    setActiveId(event.active.id);
   };
 
   const handleDragEnd = (event) => {
     const { active, over } = event;
     setActiveId(null);
 
-    if (!over) return;
+    if (active.id !== over.id) {
+      setOrders((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
 
-    const activeContainer = findContainer(active.id);
-    const overContainer = findContainer(over.id);
-
-    if (activeContainer !== overContainer) {
-      setOrders((prev) => {
-        const activeItems = prev[activeContainer];
-        const overItems = prev[overContainer];
-        const activeIndex = activeItems.findIndex(
-          (item) => item.id === active.id
-        );
-        const overIndex = overItems.findIndex((item) => item.id === over.id);
-
-        return {
-          ...prev,
-          [activeContainer]: [
-            ...prev[activeContainer].filter((item) => item.id !== active.id),
-          ],
-          [overContainer]: [
-            ...prev[overContainer].slice(0, overIndex),
-            activeItems[activeIndex],
-            ...prev[overContainer].slice(overIndex),
-          ],
+        // Cập nhật trạng thái của mục được kéo
+        const updatedItems = [...items];
+        updatedItems[oldIndex] = {
+          ...updatedItems[oldIndex],
+          orderItemStatus: over.id, // Sử dụng ID của cột đích làm trạng thái mới
         };
+
+        return arrayMove(updatedItems, oldIndex, newIndex);
       });
     }
   };
 
-  const getActiveOrder = () => {
-    const container = findContainer(activeId);
-    return container
-      ? orders[container].find((item) => item.id === activeId)
-      : null;
+  const handleDragOver = (event) => {
+    const { active, over } = event;
+    if (!over) return;
+
+    const activeOrder = orders.find((order) => order.id === active.id);
+    const overOrder = orders.find((order) => order.id === over.id);
+
+    // Nếu kéo vào một cột khác
+    if (
+      activeOrder &&
+      overOrder &&
+      activeOrder.orderItemStatus !== overOrder.orderItemStatus
+    ) {
+      setOrders((orders) => {
+        const activeIndex = orders.findIndex((order) => order.id === active.id);
+        const overIndex = orders.findIndex((order) => order.id === over.id);
+
+        return arrayMove(orders, activeIndex, overIndex).map((order, index) => {
+          if (index === overIndex) {
+            return { ...order, orderItemStatus: overOrder.orderItemStatus };
+          }
+          return order;
+        });
+      });
+    }
   };
 
+  const pendingOrders = orders.filter(
+    (order) => order.orderItemStatus === "Pending"
+  );
+  const servingOrders = orders.filter(
+    (order) => order.orderItemStatus === "Serving"
+  );
+  const completedOrders = orders.filter(
+    (order) => order.orderItemStatus === "Completed"
+  );
+
+  const activeOrder = orders.find((order) => order.id === activeId);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex items-center gap-2">
+          <Loader2 className="w-6 h-6 animate-spin" />
+          <span className="text-lg">Đang tải...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white shadow-sm p-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <h1 className="text-xl font-bold">Quản lý đồ ăn gọi của khách</h1>
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
+      <header className="bg-white shadow-sm border-b sticky top-0 z-10">
+        <div className="container mx-auto px-4 h-16 flex justify-between items-center">
+          <div className="flex items-center gap-3">
+            <ChefHat className="w-6 h-6 text-orange-500" />
+            <h1 className="text-xl font-bold text-gray-800">
+              Quản lý đồ ăn gọi của khách
+            </h1>
+          </div>
           <div className="flex items-center gap-4">
-            <button className="relative">
-              <Bell className="w-6 h-6" />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
+            <button className="relative w-10 h-10 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
+              <Bell className="w-5 h-5" />
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
                 3
               </span>
             </button>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                <span className="text-purple-600 font-medium">C</span>
-              </div>
-              <span className="font-medium">CHEF</span>
+            <div className="relative" ref={dropdownRef}>
+              <button
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                  <span className="text-purple-600 font-medium">C</span>
+                </div>
+                <span className="font-medium">CHEF</span>
+              </button>
+              {showDropdown && (
+                <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200">
+                  <div className="py-2">
+                    <div className="px-4 py-2 text-sm text-gray-500 border-b border-gray-200">
+                      Tài khoản
+                    </div>
+                    <button
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      Cài đặt
+                    </button>
+                    <button
+                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      Đăng xuất
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto py-6 flex gap-6">
+      <div className="container mx-auto py-6 px-4">
         <DndContext
-          collisionDetection={closestCorners}
+          collisionDetection={closestCenter}
           onDragStart={handleDragStart}
-          onDragOver={handleDragOver}
           onDragEnd={handleDragEnd}
+          onDragOver={handleDragOver}
         >
-          <div className="flex-1 flex gap-6">
+          <div className="flex gap-6 overflow-x-auto pb-6">
+            <OrderColumn title="Đang chờ" id="Pending" orders={pendingOrders} />
             <OrderColumn
-              title="Chưa xử lý"
-              id="unassigned"
-              orders={orders.unassigned}
-            />
-            <OrderColumn
-              title="Đang thực hiện"
-              id="inProgress"
-              orders={orders.inProgress}
+              title="Đang phục vụ"
+              id="Serving"
+              orders={servingOrders}
             />
             <OrderColumn
               title="Hoàn thành"
-              id="completed"
-              orders={orders.completed}
+              id="Completed"
+              orders={completedOrders}
             />
           </div>
-
           <DragOverlay>
             {activeId ? (
-              <OrderCard order={getActiveOrder()} id={activeId} />
+              <div className="transform scale-105">
+                <OrderCard order={activeOrder} />
+              </div>
             ) : null}
           </DragOverlay>
         </DndContext>
