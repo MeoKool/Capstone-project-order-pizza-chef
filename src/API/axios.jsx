@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://vietsac.id.vn/pizza-service/";
+const BASE_URL = "https://vietsac.id.vn/pizza-service/";
 
 const instance = axios.create({
   baseURL: BASE_URL,
