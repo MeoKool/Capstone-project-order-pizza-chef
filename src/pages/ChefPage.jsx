@@ -7,6 +7,7 @@ import {
 } from "../API/api";
 import { RefreshCw, ChefHat, Utensils } from "lucide-react";
 import { OrderCard } from "../components/order-card";
+import toast from "react-hot-toast";
 
 const ChefPage = () => {
   const [orders, setOrders] = useState([]);
@@ -35,16 +36,23 @@ const ChefPage = () => {
 
   const handleServingAction = async (orderId) => {
     try {
-      await UpdateStatusServing({ id: orderId });
-      fetchOrders();
+      const response = await UpdateStatusServing({ id: orderId });
+      if (response.success === true) {
+        toast.success("Cập nhật thành công!");
+        fetchOrders();
+      }
     } catch (err) {
       setError(err.message);
     }
   };
   const handleDoneAction = async (orderId) => {
     try {
-      await UpdateStatusDone({ id: orderId });
-      fetchOrders();
+      const response = await UpdateStatusDone({ id: orderId });
+      if (response.success === true) {
+        toast.success("Cập nhật thành công!");
+
+        fetchOrders();
+      }
     } catch (err) {
       setError(err.message);
     }
@@ -59,9 +67,9 @@ const ChefPage = () => {
   const doneOrders = orders.filter((order) => order.orderItemStatus === "Done");
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 flex flex-col">
       <Header />
-      <div className="container mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <div className=" container mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row items-center justify-end mb-8">
           <button
             onClick={fetchOrders}
@@ -144,6 +152,7 @@ const ChefPage = () => {
                     <OrderCard
                       key={order.id}
                       order={order}
+                      onAction={() => handleServingAction(order.id)}
                       actionLabel="Đã xong"
                       actionColor="bg-gray-600 hover:bg-gray-500"
                     />
@@ -153,11 +162,6 @@ const ChefPage = () => {
                       <p className="text-gray-500">Không có đơn hàng nào</p>
                     </div>
                   )}
-                  <div className="text-center py-8 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                    <p className="text-gray-500">
-                      Chưa có đơn hàng nào hoàn thành
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>

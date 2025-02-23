@@ -1,4 +1,4 @@
-import instance, { customAxios } from "./axios";
+import instance, { customAxios, customAxiosAPI } from "./axios";
 
 export const BASE_URL = "https://vietsac.id.vn/pizza-service/";
 
@@ -11,8 +11,8 @@ export const GetOrderItems = () => {
   );
 };
 export const UpdateStatusServing = ({ id }) => {
-  return instance.put(`api/order-items/serving/${id}`, { id });
+  return customAxiosAPI.put(`api/order-items/serving/${id}`, { id });
 };
 export const UpdateStatusDone = ({ id }) => {
-  return instance.put(`api/order-items/done/${id}`, { id });
+  return customAxiosAPI.put(`api/order-items/done/${id}`, { id });
 };

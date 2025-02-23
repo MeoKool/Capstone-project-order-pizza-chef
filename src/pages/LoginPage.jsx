@@ -6,6 +6,7 @@ export default function ChefLogin() {
   const handleClickLogin = () => {
     navigate("/chef");
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-cover bg-center relative">
       <div className="bg-white/80 backdrop-blur-sm p-8 rounded-lg shadow-xl w-full max-w-md z-10">

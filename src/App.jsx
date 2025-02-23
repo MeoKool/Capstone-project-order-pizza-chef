@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import RouterIndex from "./routers/RouterIndex";
 
 function App() {
@@ -5,6 +6,7 @@ function App() {
     <>
       <div>
         <RouterIndex />
+        <Toaster position="top-center" />
       </div>
     </>
   );

@@ -49,4 +49,31 @@ customAxios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const customAxiosAPI = axios.create({
+  baseURL: BASE_URL,
+  headers: { "Content-Type": "application/json" },
+});
+customAxios.interceptors.request.use(
+  (config) => {
+    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
+    // console.log(userInfo);
+    if (userInfo && userInfo.accessToken) {
+      config.headers["Authorization"] = `Bearer ${userInfo.accessToken}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+customAxiosAPI.interceptors.response.use(
+  function (response) {
+    return response.data;
+  },
+  function (error) {
+    return Promise.reject(error);
+  }
+);
+
 export default instance;
