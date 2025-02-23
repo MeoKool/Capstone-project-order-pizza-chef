@@ -1,22 +1,27 @@
-import { Bell } from "lucide-react";
+import React from "react";
+import { Bell, ChefHat } from "lucide-react";
 
-export default function Header() {
+export function Header() {
   return (
-    <header className="bg-[#1ab128] text-white p-4 shadow-md">
-      <div className="container mx-auto flex justify-between items-center">
-        <h1 className="text-xl font-bold">Kitchen Display</h1>
-        <div className="flex items-center gap-4">
-          <button className="relative">
-            <Bell className="w-6 h-6" />
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
-              3
-            </span>
-          </button>
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-              <span className="text-[#1ab128] font-medium">C</span>
+    <header className="bg-white shadow-sm">
+      <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-4">
+            <ChefHat className="w-8 h-8 text-orange-500" />
+            <h1 className="text-2xl font-bold text-gray-800">Chef Dashboard</h1>
+          </div>
+          <div className="flex items-center space-x-6">
+            <button className="relative">
+              <Bell className="w-6 h-6 text-gray-600" />
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">
+                3
+              </span>
+            </button>
+            <div className="flex items-center space-x-2">
+              <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                👨‍🍳
+              </div>
             </div>
-            <span className="font-medium">CHEF</span>
           </div>
         </div>
       </div>

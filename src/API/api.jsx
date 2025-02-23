@@ -6,5 +6,7 @@ export const SignUpAccount = (userData) => {
   return instance.post(`api/Accounts/SignUpUser`, userData);
 };
 export const GetOrderItems = () => {
-  return customAxios.get(`api/order-items`);
+  return customAxios.get(
+    `api/order-items?IncludeProperties=OrderItemDetails.OptionItem`
+  );
 };
