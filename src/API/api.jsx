@@ -7,7 +7,7 @@ export const SignUpAccount = (userData) => {
 };
 export const GetOrderItems = () => {
   return customAxios.get(
-    `api/order-items?IncludeProperties=OrderItemDetails.OptionItem`
+    `api/order-items?IncludeProperties=OrderItemDetails.OptionItem&OrderItemStatus=Pending&TakeCount=1000`
   );
 };
 export const UpdateStatusServing = ({ id }) => {
