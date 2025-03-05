@@ -1,63 +1,61 @@
-import { AlertCircle, Check, Table } from "lucide-react";
+import { Check, Table2, AlertCircle } from "lucide-react";
 
 export function FoodItem({ item, onAction }) {
   return (
-    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border-l-4 border-green-500 flex flex-col h-full">
-      <div className="flex items-center justify-between p-4 bg-green-50">
-        <div className="flex items-center space-x-2">
-          <Table className="w-6 h-6 text-green-600" />
-          <span className="text-2xl font-bold text-gray-800">
-            {item.tableCode || "Bàn ?"}
+    <div className="bg-white rounded-lg border-l-4 border-green-500 shadow hover:shadow-md transition-all duration-200 h-[400px] flex flex-col">
+      {/* Header - Fixed height */}
+      <div className="flex items-center justify-between p-3 border-b bg-green-50/50">
+        <div className="flex items-center gap-2">
+          <Table2 className="w-5 h-5 text-green-600" />
+          <span className="text-lg font-semibold text-gray-800">
+            {item.tableCode}
           </span>
         </div>
-        <div className="text-lg font-bold text-red-500">x{item.quantity}</div>
+        <span className="text-red-500 font-medium">x{item.quantity}</span>
       </div>
 
-      <div className="p-4 flex-grow">
-        <h3 className="text-2xl font-bold text-gray-800 mb-4 flex items-center">
-          {item.name}
-        </h3>
+      {/* Scrollable Content */}
+      <div className="flex-1 overflow-y-auto p-4">
+        <h3 className="text-xl font-bold text-gray-800 mb-4">{item.name}</h3>
 
         {item.orderItemDetails && item.orderItemDetails.length > 0 && (
           <div className="mb-4">
-            <p className="text-lg font-semibold text-gray-700 mb-2">
-              Tùy chọn:
-            </p>
-            <ul className="space-y-2 pl-4">
+            <p className="text-sm font-medium text-gray-600 mb-2">Tùy chọn:</p>
+            <ul className="space-y-1.5">
               {item.orderItemDetails.map((detail, index) => (
-                <li key={index} className="flex items-center text-lg">
-                  <span className="w-2 h-2 bg-amber-500 rounded-full mr-2"></span>
-                  <span className="text-gray-800">{detail.name}</span>
+                <li key={index} className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 bg-orange-400 rounded-full"></span>
+                  <span className="text-gray-700">{detail.name}</span>
                 </li>
               ))}
             </ul>
           </div>
         )}
 
+        {/* Special Notes */}
         {item.note && (
-          <div className="mt-4">
-            <div className="flex items-center mb-2">
-              <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
-              <p className="text-lg font-semibold text-red-500">
-                Ghi chú đặc biệt:
-              </p>
+          <div className="mt-3">
+            <div className="flex items-center gap-1.5 mb-1">
+              <AlertCircle className="w-4 h-4 text-red-500" />
+              <p className="text-sm font-medium text-red-500">Ghi chú:</p>
             </div>
-            <div className="bg-red-50 p-3 rounded-md border border-red-200">
-              <p className="text-lg text-red-700 whitespace-pre-wrap break-words">
-                {item.note || "Không có ghi chú"}
+            <div className="bg-red-50 rounded p-2 text-sm text-gray-700">
+              <p className="break-words whitespace-pre-wrap">
+                {item.note || "No Comment"}
               </p>
             </div>
           </div>
         )}
       </div>
 
-      <div className="p-4">
+      {/* Fixed Footer */}
+      <div className="p-4 border-t bg-white">
         <button
           onClick={onAction}
-          className="w-full py-4 cursor-pointer bg-green-500 text-white rounded-md hover:bg-green-600 transition-all duration-300 text-xl font-bold flex items-center justify-center"
+          className="w-full py-2.5 bg-green-500 hover:bg-green-600 text-white rounded flex items-center justify-center gap-2 transition-colors duration-200"
         >
-          <Check className="w-6 h-6 mr-2" />
-          Đã hoàn thành
+          <Check className="w-5 h-5" />
+          <span className="font-medium">Đã hoàn thành</span>
         </button>
       </div>
     </div>
