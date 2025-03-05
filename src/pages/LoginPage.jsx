@@ -12,7 +12,7 @@ export default function ChefLogin() {
       <div className="bg-white/80 backdrop-blur-sm p-8 rounded-lg shadow-xl w-full max-w-md z-10">
         <div className="flex flex-col items-center mb-6">
           <ChefHat className="w-16 h-16 text-orange-500 mb-2" />
-          <h1 className="text-3xl font-bold text-gray-800">Chef Login</h1>
+          <h1 className="text-3xl font-bold text-gray-800">Login</h1>
         </div>
         <form className="space-y-4">
           <div className="space-y-2">
