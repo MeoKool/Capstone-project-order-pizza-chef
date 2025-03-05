@@ -11,7 +11,7 @@ const RouterIndex = () => {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/chef" element={<ChefPage />} />
-        <Route path="/staff" element={<StaffPage />}></Route>
+        <Route path="/staff" element={<StaffPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Suspense>

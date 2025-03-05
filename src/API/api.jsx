@@ -10,6 +10,11 @@ export const GetOrderItems = () => {
     `api/order-items?IncludeProperties=OrderItemDetails.OptionItem&OrderItemStatus=Pending&TakeCount=1000`
   );
 };
+export const GetOrderItemsServing = () => {
+  return customAxios.get(
+    `api/order-items?IncludeProperties=OrderItemDetails.OptionItem&OrderItemStatus=Serving&TakeCount=1000`
+  );
+};
 export const UpdateStatusServing = ({ id }) => {
   return customAxiosAPI.put(`api/order-items/serving/${id}`, { id });
 };

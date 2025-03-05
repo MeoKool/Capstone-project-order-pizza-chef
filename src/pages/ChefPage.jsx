@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { GetOrderItems, UpdateStatusServing } from "../API/api";
-import { KitchenHeader } from "../components/kitchen-header";
-import { FoodItemGrid } from "../components/food-item-grid";
+import { KitchenHeader } from "../components/Chef/kitchen-header";
+import { FoodItemGrid } from "../components/Chef/food-item-grid";
 
 export default function ChefPage() {
   const [orders, setOrders] = useState([]);
