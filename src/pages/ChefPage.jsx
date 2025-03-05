@@ -43,11 +43,6 @@ export default function ChefPage() {
     }
   };
 
-  // Filter only pending orders that need to be prepared
-  const pendingOrders = orders.filter(
-    (order) => order.orderItemStatus === "Pending"
-  );
-
   return (
     <div className="min-h-screen bg-gray-100">
       <KitchenHeader onRefresh={fetchOrders} />
@@ -65,19 +60,16 @@ export default function ChefPage() {
           </div>
         )}
 
-        <div className="bg-white rounded-2xl p-8 shadow-lg">
+        <div className="bg-[#FEFCF3] rounded-2xl p-8 shadow-lg">
           <div className="flex items-center gap-2 mb-8">
             <div className="w-2 h-2 bg-green-500 rounded-full"></div>
             <h2 className="text-xl font-bold text-gray-800">
-              Món ăn cần chuẩn bị ({pendingOrders.length})
+              Món ăn cần chuẩn bị ({orders.length})
             </h2>
           </div>
 
-          {pendingOrders.length > 0 ? (
-            <FoodItemGrid
-              items={pendingOrders}
-              onAction={handleServingAction}
-            />
+          {orders.length > 0 ? (
+            <FoodItemGrid items={orders} onAction={handleServingAction} />
           ) : (
             <div className="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
               <p className="text-gray-500 text-xl">
