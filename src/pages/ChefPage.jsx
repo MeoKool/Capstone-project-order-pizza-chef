@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { GetOrderItems, UpdateStatusServing } from "../API/api";
-import { KitchenHeader } from "../components/kitchen-header";
-import { FoodItemGrid } from "../components/food-item-grid";
+import { KitchenHeader } from "../components/Chef/kitchen-header";
+import { FoodItemGrid } from "../components/Chef/food-item-grid";
 
 export default function ChefPage() {
   const [orders, setOrders] = useState([]);
@@ -44,9 +44,10 @@ export default function ChefPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-50">
       <KitchenHeader onRefresh={fetchOrders} />
-      <main className="container mx-auto py-8 px-6">
+
+      <main className="container mx-auto py-6 px-4">
         {isLoading && (
           <div className="flex justify-center items-center h-64">
             <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-500"></div>
@@ -54,30 +55,28 @@ export default function ChefPage() {
         )}
 
         {error && (
-          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-md">
+          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
             <p className="font-bold">Lỗi</p>
             <p>{error}</p>
           </div>
         )}
 
-        <div className="bg-[#FEFCF3] rounded-2xl p-8 shadow-lg">
-          <div className="flex items-center gap-2 mb-8">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <h2 className="text-xl font-bold text-gray-800">
-              Món ăn cần chuẩn bị ({orders.length})
-            </h2>
-          </div>
-
-          {orders.length > 0 ? (
-            <FoodItemGrid items={orders} onAction={handleServingAction} />
-          ) : (
-            <div className="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-              <p className="text-gray-500 text-xl">
-                Không có món ăn nào cần chuẩn bị
-              </p>
-            </div>
-          )}
+        <div className="mb-6 flex items-center gap-2">
+          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+          <h2 className="text-lg font-semibold text-gray-800">
+            Món ăn cần chuẩn bị ({orders.length})
+          </h2>
         </div>
+
+        {orders.length > 0 ? (
+          <FoodItemGrid items={orders} onAction={handleServingAction} />
+        ) : (
+          <div className="text-center py-12 bg-white rounded-lg border border-dashed border-gray-300">
+            <p className="text-gray-500 text-lg">
+              Không có món ăn nào cần chuẩn bị
+            </p>
+          </div>
+        )}
       </main>
     </div>
   );
