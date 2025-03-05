@@ -21,7 +21,7 @@ export function FoodItem({ item, onAction }) {
                 <li key={index} className="flex items-start">
                   <span className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 mr-2 flex-shrink-0"></span>
                   <div>
-                    <p className="text-gray-800">{detail.name}</p>
+                    <p className="text-gray-800 break-words">{detail.name}</p>
                   </div>
                 </li>
               ))}
@@ -32,8 +32,10 @@ export function FoodItem({ item, onAction }) {
         {item.note && (
           <div className="mb-4">
             <p className="text-sm font-medium text-gray-600 mb-2">Ghi chú:</p>
-            <div className="bg-yellow-100 p-3 rounded text-sm text-gray-700 font-bold">
-              {item.note || "No Comment"}
+            <div className="bg-yellow-100 p-3 rounded text-sm text-gray-700">
+              <p className="break-words whitespace-pre-wrap max-h-24 overflow-y-auto">
+                {item.note || "No Comment"}
+              </p>
             </div>
           </div>
         )}
