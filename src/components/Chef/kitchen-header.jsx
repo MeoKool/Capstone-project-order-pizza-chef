@@ -1,9 +1,11 @@
-import { RefreshCw, ChefHat, Clock } from "lucide-react";
+import { RefreshCw, ChefHat, Clock, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function KitchenHeader({ onRefresh }) {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const navigate = useNavigate();
 
   // Update time every minute
   useEffect(() => {
@@ -18,6 +20,11 @@ export function KitchenHeader({ onRefresh }) {
     setIsRefreshing(true);
     await onRefresh();
     setTimeout(() => setIsRefreshing(false), 500);
+  };
+
+  const handleLogout = () => {
+    // You can add any logout logic here (clear tokens, etc.)
+    navigate("/");
   };
 
   return (
@@ -60,6 +67,14 @@ export function KitchenHeader({ onRefresh }) {
                 className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
               />
               <span className="font-medium">Làm mới</span>
+            </button>
+
+            <button
+              onClick={handleLogout}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-all duration-200"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="font-medium">Đăng xuất</span>
             </button>
           </div>
         </div>

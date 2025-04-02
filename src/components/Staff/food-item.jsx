@@ -1,8 +1,15 @@
-"use client";
-
-import { Check, Table2, AlertCircle } from "lucide-react";
+import {
+  Check,
+  Table2,
+  AlertCircle,
+  ShoppingBag,
+  Briefcase,
+} from "lucide-react";
 
 export function FoodItem({ item, onAction }) {
+  // Get the appropriate icon based on type
+  const TypeIcon = item.type === "Order" ? ShoppingBag : Briefcase;
+
   return (
     <div className="bg-white rounded-lg border-l-4 border-blue-500 shadow-lg hover:shadow-xl transition-all duration-200 h-[400px] flex flex-col">
       {/* Header - Fixed height */}
@@ -13,8 +20,20 @@ export function FoodItem({ item, onAction }) {
             Bàn {item.tableCode}
           </span>
         </div>
-        <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
-          x{item.quantity}
+        <div className="flex items-center gap-2">
+          <div
+            className={`flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
+              item.type === "Order"
+                ? "bg-blue-100 text-blue-800"
+                : "bg-purple-100 text-purple-800"
+            }`}
+          >
+            <TypeIcon className="w-3 h-3" />
+            <span>{item.type}</span>
+          </div>
+          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
+            x{item.quantity}
+          </span>
         </div>
       </div>
 
@@ -37,7 +56,7 @@ export function FoodItem({ item, onAction }) {
         )}
 
         {/* Special Notes */}
-        {item.note && (
+        {item.note && item.note !== "No Comment" && (
           <div className="mt-3 bg-yellow-50 p-3 rounded-md border-l-4 border-yellow-400">
             <div className="flex items-center gap-1.5 mb-1">
               <AlertCircle className="w-4 h-4 text-yellow-600" />
