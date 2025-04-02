@@ -1,8 +1,8 @@
 import { Navigate } from "react-router-dom";
 
 export function ProtectedRoute({ children, requiredRole }) {
-  const token = sessionStorage.getItem("token");
-  const userRole = sessionStorage.getItem("userRole");
+  const token = localStorage.getItem("token");
+  const userRole = localStorage.getItem("userRole");
 
   // Check if user is logged in
   if (!token) {
@@ -19,7 +19,7 @@ export function ProtectedRoute({ children, requiredRole }) {
       return <Navigate to="/staff" replace />;
     } else {
       // If role is unknown, log out
-      sessionStorage.clear();
+      localStorage.clear();
       return <Navigate to="/" replace />;
     }
   }

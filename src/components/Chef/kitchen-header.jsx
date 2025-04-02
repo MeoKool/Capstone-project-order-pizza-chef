@@ -9,8 +9,7 @@ export function KitchenHeader({ onRefresh }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Get user name from session storage
-    const storedName = sessionStorage.getItem("userName");
+    const storedName = localStorage.getItem("userName");
     if (storedName) {
       setUserName(storedName);
     }
@@ -30,12 +29,7 @@ export function KitchenHeader({ onRefresh }) {
   };
 
   const handleLogout = () => {
-    // Clear session storage
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("userRole");
-    sessionStorage.removeItem("userName");
-    sessionStorage.removeItem("tokenExpiration");
-
+    localStorage.clear();
     // Navigate to login page
     navigate("/");
   };

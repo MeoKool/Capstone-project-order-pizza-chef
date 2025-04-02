@@ -31,8 +31,7 @@ export const customAxios = axios.create({
 
 customAxios.interceptors.request.use(
   (config) => {
-    // Get token from sessionStorage instead of localStorage
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
@@ -59,8 +58,7 @@ export const customAxiosAPI = axios.create({
 
 customAxiosAPI.interceptors.request.use(
   (config) => {
-    // Get token from sessionStorage instead of localStorage
-    const token = sessionStorage.getItem("token");
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }

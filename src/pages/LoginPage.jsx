@@ -28,11 +28,11 @@ export default function LoginPage() {
           throw new Error("Token không hợp lệ");
         }
 
-        // Store token and user info in sessionStorage
-        sessionStorage.setItem("token", response.result.token);
-        sessionStorage.setItem("userRole", decodedToken.role);
-        sessionStorage.setItem("userName", decodedToken.name);
-        sessionStorage.setItem("tokenExpiration", response.result.expiration);
+        // Store token and user info in localStorage
+        localStorage.setItem("token", response.result.token);
+        localStorage.setItem("userRole", decodedToken.role);
+        localStorage.setItem("userName", decodedToken.name);
+        localStorage.setItem("tokenExpiration", response.result.expiration);
 
         // Redirect based on role
         if (decodedToken.role === "Cheff") {

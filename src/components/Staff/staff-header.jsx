@@ -9,8 +9,8 @@ export function StaffHeader({ onRefresh }) {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Get user name from session storage
-    const storedName = sessionStorage.getItem("userName");
+    // Get user name from localStorage
+    const storedName = localStorage.getItem("userName");
     if (storedName) {
       setUserName(storedName);
     }
@@ -30,11 +30,11 @@ export function StaffHeader({ onRefresh }) {
   };
 
   const handleLogout = () => {
-    // Clear session storage
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("userRole");
-    sessionStorage.removeItem("userName");
-    sessionStorage.removeItem("tokenExpiration");
+    // Clear localStorage
+    localStorage.removeItem("token");
+    localStorage.removeItem("userRole");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("tokenExpiration");
 
     // Navigate to login page
     navigate("/");
