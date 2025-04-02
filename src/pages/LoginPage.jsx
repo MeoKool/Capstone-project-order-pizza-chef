@@ -3,6 +3,7 @@ import { ChefHat, User, Lock, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { LoginStaff } from "../API/api";
 import { decodeJWT } from "../utils/jwt";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -35,11 +36,13 @@ export default function LoginPage() {
 
         // Redirect based on role
         if (decodedToken.role === "Cheff") {
+          toast.success("Đăng nhập thành công!");
           navigate("/chef");
         } else if (decodedToken.role === "Staff") {
+          toast.success("Đăng nhập thành công!");
           navigate("/staff");
         } else {
-          throw new Error("Vai trò không được hỗ trợ");
+          throw new Error("Bạn không có quyền truy cập vào trang này");
         }
       } else {
         throw new Error("Đăng nhập thất bại. Vui lòng thử lại.");
