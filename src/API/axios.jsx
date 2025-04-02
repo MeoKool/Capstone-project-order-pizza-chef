@@ -28,12 +28,13 @@ export const customAxios = axios.create({
   baseURL: BASE_URL,
   headers: { "Content-Type": "application/json" },
 });
+
 customAxios.interceptors.request.use(
   (config) => {
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    // console.log(userInfo);
-    if (userInfo && userInfo.accessToken) {
-      config.headers["Authorization"] = `Bearer ${userInfo.accessToken}`;
+    // Get token from sessionStorage instead of localStorage
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
@@ -41,6 +42,7 @@ customAxios.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
 customAxios.interceptors.response.use(
   function (response) {
     return response.data.result;
@@ -54,12 +56,13 @@ export const customAxiosAPI = axios.create({
   baseURL: BASE_URL,
   headers: { "Content-Type": "application/json" },
 });
-customAxios.interceptors.request.use(
+
+customAxiosAPI.interceptors.request.use(
   (config) => {
-    const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-    // console.log(userInfo);
-    if (userInfo && userInfo.accessToken) {
-      config.headers["Authorization"] = `Bearer ${userInfo.accessToken}`;
+    // Get token from sessionStorage instead of localStorage
+    const token = sessionStorage.getItem("token");
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },
@@ -67,6 +70,7 @@ customAxios.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
 customAxiosAPI.interceptors.response.use(
   function (response) {
     return response.data;

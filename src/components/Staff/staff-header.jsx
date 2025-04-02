@@ -5,10 +5,17 @@ import { useNavigate } from "react-router-dom";
 export function StaffHeader({ onRefresh }) {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [userName, setUserName] = useState("");
   const navigate = useNavigate();
 
-  // Update time every minute
   useEffect(() => {
+    // Get user name from session storage
+    const storedName = sessionStorage.getItem("userName");
+    if (storedName) {
+      setUserName(storedName);
+    }
+
+    // Update time every minute
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 60000);
@@ -23,7 +30,13 @@ export function StaffHeader({ onRefresh }) {
   };
 
   const handleLogout = () => {
-    // You can add any logout logic here (clear tokens, etc.)
+    // Clear session storage
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("userRole");
+    sessionStorage.removeItem("userName");
+    sessionStorage.removeItem("tokenExpiration");
+
+    // Navigate to login page
     navigate("/");
   };
 
@@ -56,6 +69,11 @@ export function StaffHeader({ onRefresh }) {
 
           {/* Right side */}
           <div className="flex items-center gap-4">
+            {userName && (
+              <div className="hidden md:block text-sm text-gray-600">
+                Xin chào, <span className="font-medium">{userName}</span>
+              </div>
+            )}
             <button
               onClick={handleRefresh}
               disabled={isRefreshing}

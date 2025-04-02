@@ -5,6 +5,9 @@ export const BASE_URL = "https://vietsac.id.vn/";
 export const SignUpAccount = (userData) => {
   return instance.post(`api/Accounts/SignUpUser`, userData);
 };
+export const LoginStaff = (credentials) => {
+  return customAxiosAPI.post(`api/auth/staff/login`, credentials);
+};
 export const GetOrderItems = (params) => {
   return customAxios.get(`api/order-items`, {
     params: {
