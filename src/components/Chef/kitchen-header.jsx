@@ -1,15 +1,36 @@
-import React from "react";
 import { RefreshCw, ChefHat, Clock } from "lucide-react";
+import { useState, useEffect } from "react";
 
 export function KitchenHeader({ onRefresh }) {
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Update time every minute
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    await onRefresh();
+    setTimeout(() => setIsRefreshing(false), 500);
+  };
+
   return (
-    <div className="bg-white border-b">
+    <div className="bg-white border-b sticky top-0 z-10 shadow-sm">
       <div className="container mx-auto">
         <div className="flex items-center justify-between h-16 px-6">
           {/* Left side */}
-          <div className="flex items-center gap-8">
-            <h1 className="text-xl font-semibold text-gray-800">Bếp</h1>
-            <div className="hidden md:flex items-center gap-6">
+          <div className="flex items-center gap-3">
+            <div className="bg-green-100 p-2 rounded-full">
+              <ChefHat className="w-6 h-6 text-green-600" />
+            </div>
+            <h1 className="text-xl font-bold text-gray-800">Bếp</h1>
+            <div className="hidden md:flex items-center gap-6 ml-6">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <span className="text-sm text-gray-600">Hoạt động</span>
@@ -17,7 +38,7 @@ export function KitchenHeader({ onRefresh }) {
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-gray-400" />
                 <span className="text-sm text-gray-600">
-                  {new Date().toLocaleTimeString("vi-VN", {
+                  {currentTime.toLocaleTimeString("vi-VN", {
                     hour: "2-digit",
                     minute: "2-digit",
                   })}
@@ -29,10 +50,15 @@ export function KitchenHeader({ onRefresh }) {
           {/* Right side */}
           <div className="flex items-center gap-4">
             <button
-              onClick={onRefresh}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-200"
+              onClick={handleRefresh}
+              disabled={isRefreshing}
+              className={`inline-flex items-center gap-2 px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all duration-200 ${
+                isRefreshing ? "opacity-75" : ""
+              }`}
             >
-              <RefreshCw className="w-4 h-4" />
+              <RefreshCw
+                className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}
+              />
               <span className="font-medium">Làm mới</span>
             </button>
           </div>

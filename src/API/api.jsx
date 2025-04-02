@@ -34,3 +34,6 @@ export const UpdateStatusServing = ({ id }) => {
 export const UpdateStatusDone = ({ id }) => {
   return customAxiosAPI.put(`api/order-items/done/${id}`, { id });
 };
+export const UpdateStatusCancelled = ({ id }) => {
+  return customAxiosAPI.put(`api/order-items/cancelled/${id}`, { id });
+};
