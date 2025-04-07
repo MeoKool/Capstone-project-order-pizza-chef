@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Check,
   Table2,
@@ -5,17 +7,32 @@ import {
   X,
   ShoppingBag,
   Briefcase,
+  CookingPot,
 } from "lucide-react";
 import { useState } from "react";
+import { CancelReasonDialog } from "./cancel-reason-dialog";
 
 export function FoodItem({ item, onAction }) {
-  const [showConfirmCancel, setShowConfirmCancel] = useState(false);
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   // Get the appropriate icon based on type
   const TypeIcon = item.type === "Order" ? ShoppingBag : Briefcase;
 
+  // Determine border color based on status
+  const getBorderColor = () => {
+    switch (item.orderItemStatus) {
+      case "Cooking":
+        return "border-orange-500";
+      case "Pending":
+      default:
+        return "border-green-500";
+    }
+  };
+
   return (
-    <div className="bg-white rounded-lg border-l-4 border-green-500 shadow-lg hover:shadow-xl transition-all duration-200 h-[400px] flex flex-col">
+    <div
+      className={`bg-white rounded-lg border-l-4 ${getBorderColor()} shadow-lg hover:shadow-xl transition-all duration-200 h-[400px] flex flex-col`}
+    >
       {/* Header - Fixed height */}
       <div className="flex items-center justify-between p-3 border-b bg-gray-50">
         <div className="flex items-center gap-2">
@@ -35,6 +52,12 @@ export function FoodItem({ item, onAction }) {
             <TypeIcon className="w-3 h-3" />
             <span>{item.type}</span>
           </div>
+          {item.orderItemStatus === "Cooking" && (
+            <div className="flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+              <CookingPot className="w-3 h-3" />
+              <span>Đang nấu</span>
+            </div>
+          )}
           <span className="text-red-500 font-medium text-lg">
             x{item.quantity}
           </span>
@@ -71,38 +94,44 @@ export function FoodItem({ item, onAction }) {
             </div>
           </div>
         )}
+
+        {/* Cooking time information */}
+        {item.startTimeCooking && (
+          <div className="mt-3 bg-orange-50 p-3 rounded-md">
+            <div className="flex items-center gap-1.5">
+              <CookingPot className="w-4 h-4 text-orange-600" />
+              <p className="text-sm text-orange-700">
+                Bắt đầu nấu:{" "}
+                {new Date(item.startTimeCooking).toLocaleTimeString("vi-VN", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Fixed Footer with Action Buttons */}
       <div className="p-3 border-t bg-white">
-        {showConfirmCancel ? (
-          <div className="flex gap-2">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setShowCancelDialog(true)}
+            className="w-1/3 py-2.5 bg-red-100 hover:bg-red-200 text-red-600 rounded flex items-center justify-center gap-1 transition-colors duration-200"
+          >
+            <X className="w-4 h-4" />
+            <span className="font-medium">Hủy</span>
+          </button>
+
+          {item.orderItemStatus === "Pending" ? (
             <button
-              onClick={() => setShowConfirmCancel(false)}
-              className="flex-1 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded flex items-center justify-center gap-1 transition-colors duration-200"
+              onClick={() => onAction(item.id, "cooking")}
+              className="w-2/3 py-2.5 bg-orange-500 hover:bg-orange-600 text-white rounded flex items-center justify-center gap-1 transition-colors duration-200"
             >
-              <span className="font-medium">Hủy</span>
+              <CookingPot className="w-4 h-4" />
+              <span className="font-medium">Xác nhận nấu</span>
             </button>
-            <button
-              onClick={() => {
-                onAction(item.id, "cancel");
-                setShowConfirmCancel(false);
-              }}
-              className="flex-1 py-2 bg-red-500 hover:bg-red-600 text-white rounded flex items-center justify-center gap-1 transition-colors duration-200"
-            >
-              <X className="w-4 h-4" />
-              <span className="font-medium">Xác nhận</span>
-            </button>
-          </div>
-        ) : (
-          <div className="flex gap-2">
-            <button
-              onClick={() => setShowConfirmCancel(true)}
-              className="w-1/3 py-2.5 bg-red-100 hover:bg-red-200 text-red-600 rounded flex items-center justify-center gap-1 transition-colors duration-200"
-            >
-              <X className="w-4 h-4" />
-              <span className="font-medium">Hủy</span>
-            </button>
+          ) : (
             <button
               onClick={() => onAction(item.id, "serve")}
               className="w-2/3 py-2.5 bg-green-500 hover:bg-green-600 text-white rounded flex items-center justify-center gap-1 transition-colors duration-200"
@@ -110,9 +139,20 @@ export function FoodItem({ item, onAction }) {
               <Check className="w-4 h-4" />
               <span className="font-medium">Đã hoàn thành</span>
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
+
+      {/* Cancel Reason Dialog */}
+      <CancelReasonDialog
+        isOpen={showCancelDialog}
+        onClose={() => setShowCancelDialog(false)}
+        onConfirm={(id, reason) => {
+          onAction(id, "cancel", reason);
+          setShowCancelDialog(false);
+        }}
+        itemId={item.id}
+      />
     </div>
   );
 }

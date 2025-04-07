@@ -1,9 +1,12 @@
+"use client";
+
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import {
   GetOrderItems,
   UpdateStatusServing,
   UpdateStatusCancelled,
+  UpdateStatusCooking,
 } from "../API/api";
 import { KitchenHeader } from "../components/Chef/kitchen-header";
 import { FoodItemGrid } from "../components/Chef/food-item-grid";
@@ -31,9 +34,21 @@ export default function ChefPage() {
     }
   }, []);
 
-  // Filter orders
+  // Sort and filter orders
   useEffect(() => {
     let result = [...orders];
+
+    // Sort orders: Cooking first, then Pending
+    result.sort((a, b) => {
+      // First sort by status (Cooking comes before Pending)
+      if (a.orderItemStatus === "Cooking" && b.orderItemStatus !== "Cooking")
+        return -1;
+      if (a.orderItemStatus !== "Cooking" && b.orderItemStatus === "Cooking")
+        return 1;
+
+      // Then sort by start time (oldest first)
+      return new Date(a.startTime) - new Date(b.startTime);
+    });
 
     // Apply type filter
     if (activeTab === "order") {
@@ -60,31 +75,50 @@ export default function ChefPage() {
     return () => clearInterval(interval);
   }, [fetchOrders]);
 
-  const handleAction = async (orderId, actionType) => {
+  const handleAction = async (orderId, actionType, reason = null) => {
     try {
       let response;
 
       if (actionType === "serve") {
         response = await UpdateStatusServing({ id: orderId });
       } else if (actionType === "cancel") {
-        response = await UpdateStatusCancelled({ id: orderId });
+        response = await UpdateStatusCancelled({ id: orderId, reason });
+      } else if (actionType === "cooking") {
+        response = await UpdateStatusCooking({ id: orderId });
       }
 
       if (response.success === true) {
-        const actionText = actionType === "serve" ? "hoàn thành" : "hủy";
+        let actionText = "";
+        switch (actionType) {
+          case "serve":
+            actionText = "hoàn thành";
+            break;
+          case "cancel":
+            actionText = "hủy";
+            break;
+          case "cooking":
+            actionText = "xác nhận nấu";
+            break;
+        }
         toast.success(`Đã ${actionText} món ăn thành công!`);
         fetchOrders();
       }
     } catch (err) {
       setError(err);
-      toast.error("Lỗi: " + error);
+      toast.error("Lỗi: " + (err?.message || "Không xác định"));
     }
   };
 
-  // Count orders by type
+  // Count orders by type and status
   const orderCount = orders.filter((item) => item.type === "Order").length;
   const workshopCount = orders.filter(
     (item) => item.type === "Workshop"
+  ).length;
+  const cookingCount = orders.filter(
+    (item) => item.orderItemStatus === "Cooking"
+  ).length;
+  const pendingCount = orders.filter(
+    (item) => item.orderItemStatus === "Pending"
   ).length;
 
   return (
@@ -169,13 +203,28 @@ export default function ChefPage() {
         {error && (
           <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded">
             <p className="font-bold">Lỗi</p>
-            <p>{error}</p>
+            <p>{error?.message || "Không xác định"}</p>
           </div>
         )}
 
+        {/* Status summary */}
+        <div className="mb-4 flex flex-wrap gap-4">
+          <div className="bg-white rounded-lg shadow-sm p-3 flex items-center gap-3">
+            <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+            <span className="text-sm font-medium">
+              Đang nấu: {cookingCount}
+            </span>
+          </div>
+          <div className="bg-white rounded-lg shadow-sm p-3 flex items-center gap-3">
+            <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+            <span className="text-sm font-medium">
+              Chờ xác nhận: {pendingCount}
+            </span>
+          </div>
+        </div>
+
         <div className="mb-6 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
             <h2 className="text-lg font-semibold text-gray-800">
               Món ăn cần chuẩn bị ({filteredOrders.length})
             </h2>
