@@ -11,6 +11,7 @@ import {
 import { KitchenHeader } from "../components/Chef/kitchen-header";
 import { FoodItemGrid } from "../components/Chef/food-item-grid";
 import { Search, X, ShoppingBag, Briefcase } from "lucide-react";
+import SignalRListener from "../signalR/signalr-client";
 
 export default function ChefPage() {
   const [orders, setOrders] = useState([]);
@@ -123,6 +124,7 @@ export default function ChefPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <SignalRListener />
       <KitchenHeader onRefresh={fetchOrders} />
 
       <main className="container mx-auto py-6 px-4">

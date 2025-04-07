@@ -4,6 +4,8 @@ import { GetOrderItemsServing, UpdateStatusDone } from "../API/api";
 import { StaffHeader } from "../components/Staff/staff-header";
 import { FoodItemGrid } from "../components/Staff/food-item-grid";
 import { Search, X, ShoppingBag, Briefcase } from "lucide-react";
+import SignalRListener from "../signalR/signalr-client";
+import { connection } from "../lib/signalr-client";
 
 export default function StaffPage() {
   const [orders, setOrders] = useState([]);
@@ -52,8 +54,6 @@ export default function StaffPage() {
 
   useEffect(() => {
     fetchOrders();
-    const interval = setInterval(fetchOrders, 30000);
-    return () => clearInterval(interval);
   }, [fetchOrders]);
 
   const handleServingAction = async (orderId) => {
@@ -75,8 +75,23 @@ export default function StaffPage() {
     (item) => item.type === "Workshop"
   ).length;
 
+  // ------------------
+  // Auto refresh khi nhận được sự kiện từ SIGNALR
+  // ------------------
+  useEffect(() => {
+    const handleNewOrder = () => {
+      fetchOrders();
+    };
+
+    connection.on("OrderItemUpdatedStatus", handleNewOrder);
+    return () => {
+      connection.off("OrderItemUpdatedStatus", handleNewOrder);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50">
+      <SignalRListener />
       <StaffHeader onRefresh={fetchOrders} />
 
       <main className="container mx-auto py-6 px-4">

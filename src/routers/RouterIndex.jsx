@@ -11,6 +11,7 @@ const RouterIndex = () => {
     <Suspense fallback={<div>Loading...</div>}>
       <Routes>
         <Route path="/" element={<LoginPage />} />
+
         <Route
           path="/chef"
           element={
