@@ -10,7 +10,7 @@ import {
 } from "../API/api";
 import { KitchenHeader } from "../components/Chef/kitchen-header";
 import { FoodItemGrid } from "../components/Chef/food-item-grid";
-import { Search, X, ShoppingBag, Briefcase } from "lucide-react";
+import { Search, X, Briefcase } from "lucide-react";
 import SignalRListener from "../signalR/signalr-client";
 import { connection } from "../lib/signalr-client";
 
@@ -20,7 +20,7 @@ export default function ChefPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeTab, setActiveTab] = useState("all"); // all, order, workshop
+  const [activeFilter, setActiveFilter] = useState("all"); // all, workshop, HotKitchen, ColdKitchen
 
   const fetchOrders = useCallback(async () => {
     setIsLoading(true);
@@ -52,11 +52,17 @@ export default function ChefPage() {
       return new Date(a.startTime) - new Date(b.startTime);
     });
 
-    // Apply type filter
-    if (activeTab === "order") {
-      result = result.filter((item) => item.type === "Order");
-    } else if (activeTab === "workshop") {
+    // Apply filter based on activeFilter
+    if (activeFilter === "workshop") {
       result = result.filter((item) => item.type === "Workshop");
+    } else if (activeFilter === "HotKitchen") {
+      result = result.filter(
+        (item) => item.productType === "HotKitchen" && item.type === "Order"
+      );
+    } else if (activeFilter === "ColdKitchen") {
+      result = result.filter(
+        (item) => item.productType === "ColdKitchen" && item.type === "Order"
+      );
     }
 
     // Apply search filter
@@ -69,7 +75,7 @@ export default function ChefPage() {
     }
 
     setFilteredOrders(result);
-  }, [orders, searchTerm, activeTab]);
+  }, [orders, searchTerm, activeFilter]);
 
   useEffect(() => {
     fetchOrders();
@@ -121,6 +127,14 @@ export default function ChefPage() {
     (item) => item.orderItemStatus === "Pending"
   ).length;
 
+  // Count only Order items for kitchen types
+  const hotKitchenCount = orders.filter(
+    (item) => item.productType === "HotKitchen" && item.type === "Order"
+  ).length;
+  const coldKitchenCount = orders.filter(
+    (item) => item.productType === "ColdKitchen" && item.type === "Order"
+  ).length;
+
   // ------------------
   // Auto refresh khi nhận được sự kiện từ SIGNALR
   // ------------------
@@ -165,9 +179,9 @@ export default function ChefPage() {
 
           <div className="flex border-b">
             <button
-              onClick={() => setActiveTab("all")}
+              onClick={() => setActiveFilter("all")}
               className={`flex items-center gap-2 px-4 py-2 border-b-2 font-medium text-sm ${
-                activeTab === "all"
+                activeFilter === "all"
                   ? "border-green-500 text-green-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
@@ -178,23 +192,9 @@ export default function ChefPage() {
               </span>
             </button>
             <button
-              onClick={() => setActiveTab("order")}
+              onClick={() => setActiveFilter("workshop")}
               className={`flex items-center gap-2 px-4 py-2 border-b-2 font-medium text-sm ${
-                activeTab === "order"
-                  ? "border-green-500 text-green-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              }`}
-            >
-              <ShoppingBag className="w-4 h-4" />
-              <span>Order</span>
-              <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full text-xs">
-                {orderCount}
-              </span>
-            </button>
-            <button
-              onClick={() => setActiveTab("workshop")}
-              className={`flex items-center gap-2 px-4 py-2 border-b-2 font-medium text-sm ${
-                activeTab === "workshop"
+                activeFilter === "workshop"
                   ? "border-green-500 text-green-600"
                   : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
               }`}
@@ -203,6 +203,32 @@ export default function ChefPage() {
               <span>Workshop</span>
               <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full text-xs">
                 {workshopCount}
+              </span>
+            </button>
+            <button
+              onClick={() => setActiveFilter("HotKitchen")}
+              className={`flex items-center gap-2 px-4 py-2 border-b-2 font-medium text-sm ${
+                activeFilter === "HotKitchen"
+                  ? "border-green-500 text-green-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              <span>Bếp nóng</span>
+              <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full text-xs">
+                {hotKitchenCount}
+              </span>
+            </button>
+            <button
+              onClick={() => setActiveFilter("ColdKitchen")}
+              className={`flex items-center gap-2 px-4 py-2 border-b-2 font-medium text-sm ${
+                activeFilter === "ColdKitchen"
+                  ? "border-green-500 text-green-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              <span>Bếp lạnh</span>
+              <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded-full text-xs">
+                {coldKitchenCount}
               </span>
             </button>
           </div>

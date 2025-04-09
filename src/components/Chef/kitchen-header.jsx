@@ -13,13 +13,6 @@ export function KitchenHeader({ onRefresh }) {
     if (storedName) {
       setUserName(storedName);
     }
-
-    // Update time every minute
-    const timer = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 60000);
-
-    return () => clearInterval(timer);
   }, []);
 
   const handleRefresh = async () => {
