@@ -12,6 +12,7 @@ import { KitchenHeader } from "../components/Chef/kitchen-header";
 import { FoodItemGrid } from "../components/Chef/food-item-grid";
 import { Search, X, ShoppingBag, Briefcase } from "lucide-react";
 import SignalRListener from "../signalR/signalr-client";
+import { connection } from "../lib/signalr-client";
 
 export default function ChefPage() {
   const [orders, setOrders] = useState([]);
@@ -72,8 +73,6 @@ export default function ChefPage() {
 
   useEffect(() => {
     fetchOrders();
-    const interval = setInterval(fetchOrders, 30000);
-    return () => clearInterval(interval);
   }, [fetchOrders]);
 
   const handleAction = async (orderId, actionType, reason = null) => {
@@ -122,6 +121,19 @@ export default function ChefPage() {
     (item) => item.orderItemStatus === "Pending"
   ).length;
 
+  // ------------------
+  // Auto refresh khi nhận được sự kiện từ SIGNALR
+  // ------------------
+  useEffect(() => {
+    const handleNewOrder = () => {
+      fetchOrders();
+    };
+
+    connection.on("OrderItemUpdatedStatus", handleNewOrder);
+    return () => {
+      connection.off("OrderItemUpdatedStatus", handleNewOrder);
+    };
+  }, []);
   return (
     <div className="min-h-screen bg-gray-50">
       <SignalRListener />
