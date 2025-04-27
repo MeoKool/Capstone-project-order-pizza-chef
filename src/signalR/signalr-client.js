@@ -28,8 +28,20 @@ export default function SignalRListener() {
       console.log("OrderItemUpdatedStatus:", data);
     });
 
+    connection.on("OrderItemDoneCooking", (data) => {
+      console.log("OrderItemDoneCooking:", data);
+
+      toast(data.title, {
+        description: data.message,
+        duration: Infinity,
+        closeButton: true,
+      });
+      console.log("OrderItemDoneCooking:", data);
+    });
+
     return () => {
       connection.off("OrderItemUpdatedStatus");
+      connection.off("OrderItemDoneCooking");
     };
   }, []);
 

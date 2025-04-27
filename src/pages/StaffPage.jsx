@@ -83,9 +83,9 @@ export default function StaffPage() {
       fetchOrders();
     };
 
-    connection.on("OrderItemUpdatedStatus", handleNewOrder);
+    connection.on("OrderItemDoneCooking", handleNewOrder);
     return () => {
-      connection.off("OrderItemUpdatedStatus", handleNewOrder);
+      connection.off("OrderItemDoneCooking", handleNewOrder);
     };
   }, []);
 
