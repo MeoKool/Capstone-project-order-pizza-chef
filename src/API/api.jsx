@@ -16,7 +16,7 @@ export const GetOrderItems = (params) => {
       OrderItemStatus: ["Pending", "Cooking"],
       TakeCount: 1000,
       SortBy: "startTime",
-      IncludeProperties: "OrderItemDetails",
+      IncludeProperties: "OrderItemDetails,Product.Recipes",
     },
     // Cấu hình paramsSerializer
     paramsSerializer: (p) => qs.stringify(p, { arrayFormat: "repeat" }),

@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { CancelReasonDialog } from "./cancel-reason-dialog";
+import { RecipeDetails } from "../../pages/recipe-details";
 
 export function FoodItem({ item, onAction }) {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
@@ -109,6 +110,11 @@ export function FoodItem({ item, onAction }) {
               </p>
             </div>
           </div>
+        )}
+
+        {/* Recipe details for Workshop items */}
+        {item.type === "Workshop" && item.product?.recipes && (
+          <RecipeDetails recipes={item.product.recipes} />
         )}
       </div>
 
