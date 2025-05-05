@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { GetCancelReasons } from "../../API/api";
@@ -5,12 +7,17 @@ import { GetCancelReasons } from "../../API/api";
 export function CancelReasonDialog({ isOpen, onClose, onConfirm, itemId }) {
   const [reasons, setReasons] = useState([]);
   const [selectedReason, setSelectedReason] = useState("");
+  const [customReason, setCustomReason] = useState("");
+  const [isCustom, setIsCustom] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     if (isOpen) {
       fetchReasons();
+      // Reset states when dialog opens
+      setCustomReason("");
+      setIsCustom(false);
     }
   }, [isOpen]);
 
@@ -33,6 +40,21 @@ export function CancelReasonDialog({ isOpen, onClose, onConfirm, itemId }) {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleReasonChange = (reason) => {
+    if (reason === "custom") {
+      setIsCustom(true);
+      setSelectedReason("custom");
+    } else {
+      setIsCustom(false);
+      setSelectedReason(reason);
+    }
+  };
+
+  const handleConfirm = () => {
+    const finalReason = isCustom ? customReason : selectedReason;
+    onConfirm(itemId, finalReason);
   };
 
   if (!isOpen) return null;
@@ -69,7 +91,7 @@ export function CancelReasonDialog({ isOpen, onClose, onConfirm, itemId }) {
                     name="cancelReason"
                     value={reason.reason}
                     checked={selectedReason === reason.reason}
-                    onChange={() => setSelectedReason(reason.reason)}
+                    onChange={() => handleReasonChange(reason.reason)}
                     className="mt-1 h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
                   />
                   <label
@@ -80,6 +102,38 @@ export function CancelReasonDialog({ isOpen, onClose, onConfirm, itemId }) {
                   </label>
                 </div>
               ))}
+
+              {/* Custom reason option */}
+              <div className="flex items-start">
+                <input
+                  type="radio"
+                  id="reason-custom"
+                  name="cancelReason"
+                  value="custom"
+                  checked={isCustom}
+                  onChange={() => handleReasonChange("custom")}
+                  className="mt-1 h-4 w-4 text-green-600 border-gray-300 focus:ring-green-500"
+                />
+                <label
+                  htmlFor="reason-custom"
+                  className="ml-3 block text-sm font-medium text-gray-700"
+                >
+                  Lý do khác
+                </label>
+              </div>
+
+              {/* Custom reason input field */}
+              {isCustom && (
+                <div className="mt-3 pl-7">
+                  <textarea
+                    value={customReason}
+                    onChange={(e) => setCustomReason(e.target.value)}
+                    placeholder="Nhập lý do hủy của bạn"
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-green-500 focus:border-green-500 text-sm"
+                    rows={3}
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -92,8 +146,10 @@ export function CancelReasonDialog({ isOpen, onClose, onConfirm, itemId }) {
             Hủy
           </button>
           <button
-            onClick={() => onConfirm(itemId, selectedReason)}
-            disabled={isLoading || !selectedReason}
+            onClick={handleConfirm}
+            disabled={
+              isLoading || !selectedReason || (isCustom && !customReason.trim())
+            }
             className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Xác nhận hủy
