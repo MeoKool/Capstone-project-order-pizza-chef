@@ -13,9 +13,9 @@ export function ProtectedRoute({ children, requiredRole }) {
   if (requiredRole && userRole !== requiredRole) {
     // If user is logged in but doesn't have the right role,
     // redirect to their appropriate page
-    if (userRole === "Cheff") {
+    if (userRole === "ScreenChef") {
       return <Navigate to="/chef" replace />;
-    } else if (userRole === "Staff") {
+    } else if (userRole === "ScreenWaiter") {
       return <Navigate to="/staff" replace />;
     } else {
       // If role is unknown, log out

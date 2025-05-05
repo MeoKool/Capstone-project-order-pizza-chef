@@ -15,7 +15,7 @@ const RouterIndex = () => {
         <Route
           path="/chef"
           element={
-            <ProtectedRoute requiredRole="Cheff">
+            <ProtectedRoute requiredRole="ScreenChef">
               <ChefPage />
             </ProtectedRoute>
           }
@@ -23,7 +23,7 @@ const RouterIndex = () => {
         <Route
           path="/staff"
           element={
-            <ProtectedRoute requiredRole="Staff">
+            <ProtectedRoute requiredRole="ScreenWaiter">
               <StaffPage />
             </ProtectedRoute>
           }

@@ -35,10 +35,10 @@ export default function LoginPage() {
         localStorage.setItem("tokenExpiration", response.result.expiration);
 
         // Redirect based on role
-        if (decodedToken.role === "Cheff") {
+        if (decodedToken.role === "ScreenChef") {
           toast.success("Đăng nhập thành công!");
           navigate("/chef");
-        } else if (decodedToken.role === "Staff") {
+        } else if (decodedToken.role === "ScreenWaiter") {
           toast.success("Đăng nhập thành công!");
           navigate("/staff");
         } else {
