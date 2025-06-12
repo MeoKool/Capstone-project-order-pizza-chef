@@ -167,6 +167,16 @@ export default function LoginPage() {
                 <p className="text-amber-100/80 mt-2">
                   Nhập thông tin đăng nhập của bạn
                 </p>
+                <p className="text-amber-100/80 mt-2">
+                  Tài khoản bếp:{" "}
+                  <span className="text-white font-bold ">adminchef</span> |{" "}
+                  <span className="text-white font-bold">Abc@12345</span>
+                </p>
+                <p className="text-amber-100/80 mt-2">
+                  Tài khoản phục vụ:{" "}
+                  <span className="text-white font-bold">adminstaff</span> |{" "}
+                  <span className="text-white font-bold">Abc@12345</span>
+                </p>
               </div>
 
               {error && (
